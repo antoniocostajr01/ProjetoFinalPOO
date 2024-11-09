@@ -1,6 +1,4 @@
-# Classe-> Locker: Representa um Armário individual.
-# Atributos: __locker_id, __is_ocupado, __usuario_id.
-# Métodos: associar_usuario(usuario_id), liberar_usuario(), get_status(), get_locker_id().
+import customtkinter
 
 class Locker:
      """
