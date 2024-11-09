@@ -152,38 +152,47 @@ class LockerApp(ctk.CTk):
             if status:
                 usuario_id, is_livre = status
                 if is_livre:
-                    self.status_label.config(text=f"Locker {locker_id} está livre.")
+                    self.status_label.configure(text=f"Locker {locker_id} está livre.")
                 else:
                     usuario_nome = self.sistema_locker.get_usuario_nome(usuario_id)
-                    self.status_label.config(text=f"Locker {locker_id} está ocupado por {usuario_nome}.")
+                    self.status_label.configure(text=f"Locker {locker_id} está ocupado por {usuario_nome}.")
             else:
-                self.status_label.config(text="Locker não encontrado.")
+                self.status_label.configure(text="Locker não encontrado.")
         else:
-            self.status_label.config(text="ID do Locker inválido.")
+            self.status_label.configure(text="ID do Locker inválido.")
 
     def prompt_input(self, prompt):
         input_window = ctk.CTkToplevel(self)
         input_window.title("Entrada de Dados")
-        input_window.geometry("300x100")
+        input_window.geometry("300x150")
 
         label = ctk.CTkLabel(input_window, text=prompt)
         label.pack(pady=10)
 
         entry = ctk.CTkEntry(input_window)
         entry.pack(pady=5)
+        botao_clicado = ctk.BooleanVar()
+
 
         def submit():
-            input_window.destroy()
-            return entry.get()
+            # mudar a variável para o .wait_variable executar o resto do código
+            botao_clicado.set(True)
 
         submit_button = ctk.CTkButton(input_window, text="Submeter", command=submit)
         submit_button.pack(pady=5)
 
-        self.wait_window(input_window)  # Aguarda a entrada do usuário
-        return entry.get()
+        self.wait_variable(botao_clicado)  # Aguarda a entrada do usuário
+        # Depois que o botão foi clicado, executar código abaixo
+
+        resultado = entry.get() # recuperar valor do input
+        input_window.destroy() # destruir janela
+
+        return resultado
 
 # Programa principal
 if __name__ == "__main__":
     sistema_locker = SistemaLocker()
+    sistema_locker.adicionar_locker(100)
+    print(sistema_locker.get_locker_status(100))
     app = LockerApp(sistema_locker)
     app.mainloop()
