@@ -219,7 +219,7 @@ class LockerApp(ctk.CTk):
                 if is_livre:
                     self.status_label.configure(text=f"Locker {locker_id} está livre.")
                 else:
-                    usuario_nome = self.sistema_locker.get_usuario_nome(usuario_id)
+                    usuario_nome = self.sistema_locker.get_usuario_unico(usuario_id)
                     self.status_label.configure(text=f"Locker {locker_id} está ocupado por {usuario_nome}.")
             else:
                 self.status_label.configure(text="Locker não encontrado.")
