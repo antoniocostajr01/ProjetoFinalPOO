@@ -1,5 +1,7 @@
 import tkinter as tk
 from tkinter import messagebox, simpledialog, ttk
+#Código feito pelo Ivonei para mostrar com funciona a interface gráfica do tkinter
+
 
 class Locker:
     def __init__(self, locker_id, locker_ocupado=False, locker_usuario=None):
