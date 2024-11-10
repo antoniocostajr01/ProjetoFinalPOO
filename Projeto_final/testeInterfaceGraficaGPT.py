@@ -1,5 +1,5 @@
 import customtkinter as ctk
-from tkinter import messagebox
+from tkinter import messagebox, simpledialog, ttk
 
 class Locker:
      """
@@ -146,6 +146,9 @@ class SistemaLocker:
 
      def get_usuario_unico(self, usuario_id):
           return self.__usuarios[usuario_id].get_nome()
+     
+     def get_lockers(self):
+          return self.__lockers
 
 # Função para criar a interface gráfica
 class LockerApp(ctk.CTk):
@@ -171,9 +174,40 @@ class LockerApp(ctk.CTk):
 
         self.check_status_button = ctk.CTkButton(self.menu_frame, text="Ver Status Locker", command=self.check_status)
         self.check_status_button.grid(row=3, column=0, padx=10, pady=10)
+     #Espaço de exibição dos lockers e usuários
+        self.frame_lockers = ctk.CTkFrame(self, corner_radius=10)
+        self.frame_lockers.pack(fill=ctk.BOTH, expand=True)
 
-        self.status_label = ctk.CTkLabel(self, text="Status: Nenhuma operação realizada")
-        self.status_label.pack(pady=20)
+        # Treeview para exibição dos lockers
+        self.tree_lockers = ttk.Treeview(self.frame_lockers, columns=("ID", "Status"), show="headings")
+        self.tree_lockers.heading("ID", text="ID")
+        self.tree_lockers.heading("Status", text="Status")
+        self.tree_lockers.pack(fill=ctk.BOTH, expand=True)
+
+        #Frame para users
+        self.frame_usuarios = ctk.CTkFrame(self, border_color="blue", border_width=2, corner_radius=10)
+
+     #Treeview para exibir os usuários
+        self.treeusuarios = ttk.Treeview(self.frame_usuarios, columns=("ID", "Nome"), show="headings")
+        self.treeusuarios.heading("ID", text="ID")
+        self.treeusuarios.heading("Nome", text="Nome")
+        self.treeusuarios.pack(fill=ctk.BOTH, expand=True)
+        self.atualizar_lockers()
+     
+    def atualizar_lockers(self):
+        for row in self.tree_lockers.get_children():
+            self.tree_lockers.delete(row)
+        lockers = self.sistema_locker.get_lockers()
+        if lockers:
+            for locker_id, locker in lockers.items():
+                status = "Ocupado" if locker.get_ocupado() else "Livre"
+                usuario = locker.get_id_usuario() if locker.get_ocupado() else "N/A"
+                self.tree_lockers.insert("", "end", values=(locker_id, status, usuario))
+        else:
+            self.tree_lockers.insert("", "end", values=("Nenhum locker cadastrado", "", ""))
+
+
+    
 
     def adicionar_locker(self):
         locker_id = self.prompt_input("Digite o ID do Locker:")
@@ -262,3 +296,39 @@ if __name__ == "__main__":
     print(sistema_locker.get_locker_status(100))
     app = LockerApp(sistema_locker)
     app.mainloop()
+
+
+#Exemplo de tabela usando ctk aos inves de ttk para criação
+#  self.create_table_header()
+
+        # Exibir dados de exemplo (você pode modificar para exibir dados reais)
+#         self.display_locker_data()
+
+#     def create_table_header(self):
+#         # Linha dos cabeçalhos da tabela
+#         header_frame = ctk.CTkFrame(self.frame_lockers)
+#         header_frame.pack(fill="x")
+
+#         id_label = ctk.CTkLabel(header_frame, text="ID", width=150, font=("Arial", 12, "bold"))
+#         id_label.grid(row=0, column=0, padx=5, pady=5)
+
+#         status_label = ctk.CTkLabel(header_frame, text="Status", width=150, font=("Arial", 12, "bold"))
+#         status_label.grid(row=0, column=1, padx=5, pady=5)
+
+#     def display_locker_data(self):
+#         # Exemplo de dados para exibir
+#         dados = [
+#             ("1001", "Livre"),
+#             ("1002", "Ocupado"),
+#             ("1003", "Livre")
+#         ]
+
+#         for idx, (locker_id, status) in enumerate(dados):
+#             row_frame = ctk.CTkFrame(self.frame_lockers)
+#             row_frame.pack(fill="x")
+
+#             id_label = ctk.CTkLabel(row_frame, text=locker_id, width=150)
+#             id_label.grid(row=idx, column=0, padx=5, pady=5)
+
+#             status_label = ctk.CTkLabel(row_frame, text=status, width=150)
+#             status_label.grid(row=idx, column=1, padx=5, pady=5)
