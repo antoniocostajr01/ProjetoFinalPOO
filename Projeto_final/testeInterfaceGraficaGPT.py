@@ -73,12 +73,41 @@ class SistemaLocker:
                self.salvar_locker(self.__lockers[locker_id])
                return True
           return False
+     
+     def excluir_locker(self, locker_id):
+        """
+        Este método verifica se o usuario_id existe na lista de
+        locker, se sim ele exclui e atualiza o arquivo e retorna 
+        True, se não retorna False.
+        """
+        if locker_id in self.__lockers:
+            del self.__lockers[locker_id]
+            self.atualizar_dados()
+            return True
+        return False
 
      def adicionar_usuario(self, usuario_id, nome):
-          if usuario_id not in self.__usuarios:
-               self.__usuarios[usuario_id] = Usuario(nome, usuario_id)
-               return True
-          return False
+        """
+        Este método verifica se o usuario_id já existe na lista de
+        usuário, se não ele adiciona e retorna True, se não retorna 
+        False.
+        """
+        if usuario_id not in self.__usuarios:
+            self.__usuarios[usuario_id] = Usuario(nome, usuario_id)
+            return True
+        return False
+
+     def excluir_usuario(self, usuario_id):
+        """
+        Este método verifica se o usuario_id existe na lista de
+        usuário, se sim ele exclui e atualiza o arquivo e retorna 
+        True, se não retorna False.
+        """
+        if usuario_id in self.__usuarios:
+            del self.__usuarios[usuario_id]
+            self.atualizar_dados()
+            return True
+        return False
 
      def associar_locker_ao_usuario(self, locker_id, usuario_id):
           """
@@ -92,9 +121,11 @@ class SistemaLocker:
                     return True
           return False
 
-     def libera_locker(self, locker_id):
+     def liberar_locker(self, locker_id):
           if locker_id in self.__lockers:
-               return self.__lockers[locker_id].liberar_usuario()
+               resultado = self.__lockers[locker_id].liberar_usuario()
+               self.atualizar_dados()
+               return resultado
           return False
 
      def get_locker_status(self, locker_id):
@@ -157,7 +188,7 @@ class LockerApp(ctk.CTk):
 
         self.sistema_locker = sistema_locker
         self.title("Sistema de Lockers")
-        self.geometry("400x400")
+        self.geometry("400x500")
 
         # Criação do menu
         self.menu_frame = ctk.CTkFrame(self)
@@ -166,17 +197,30 @@ class LockerApp(ctk.CTk):
         self.add_locker_button = ctk.CTkButton(self.menu_frame, text="Adicionar Locker", command=self.adicionar_locker)
         self.add_locker_button.grid(row=0, column=0, padx=10, pady=10)
 
+        self.del_locker_button = ctk.CTkButton(self.menu_frame, text="Excluir Locker", command=self.excluir_locker)
+        self.del_locker_button.grid(row=1, column=0, padx=10, pady=10)
+
         self.add_user_button = ctk.CTkButton(self.menu_frame, text="Adicionar Usuário", command=self.adicionar_usuario)
-        self.add_user_button.grid(row=1, column=0, padx=10, pady=10)
+        self.add_user_button.grid(row=2, column=0, padx=10, pady=10)
+
+        self.del_user_button = ctk.CTkButton(self.menu_frame, text="Excluir Usuário", command=self.excluir_usuario)
+        self.del_user_button.grid(row=3, column=0, padx=10, pady=10)
 
         self.associar_button = ctk.CTkButton(self.menu_frame, text="Associar Locker", command=self.associar_locker)
-        self.associar_button.grid(row=2, column=0, padx=10, pady=10)
+        self.associar_button.grid(row=4, column=0, padx=10, pady=10)
+
+        self.liberar_button = ctk.CTkButton(self.menu_frame, text="Liberar Locker", command=self.liberar_locker)
+        self.liberar_button.grid(row=5, column=0, padx=10, pady=10)
 
         self.check_status_button = ctk.CTkButton(self.menu_frame, text="Ver Status Locker", command=self.check_status)
+<<<<<<< HEAD
         self.check_status_button.grid(row=3, column=0, padx=10, pady=10)
      #Espaço de exibição dos lockers e usuários
         self.frame_lockers = ctk.CTkFrame(self, corner_radius=10)
         self.frame_lockers.pack(fill=ctk.BOTH, expand=True)
+=======
+        self.check_status_button.grid(row=6, column=0, padx=10, pady=10)
+>>>>>>> 28e326a80fe2e3b4570457f9eb55bf61f1b7f840
 
         # Treeview para exibição dos lockers
         self.tree_lockers = ttk.Treeview(self.frame_lockers, columns=("ID", "Status"), show="headings")
@@ -220,6 +264,13 @@ class LockerApp(ctk.CTk):
         else:
             messagebox.showerror("Erro", "ID do Locker inválido.")
 
+    def excluir_locker(self):
+        locker_id = self.prompt_input("Digite o ID do Locker a ser excluído:")
+        if locker_id and self.sistema_locker.excluir_locker(locker_id):
+            messagebox.showinfo("Sucesso", f"Locker {locker_id} excluído com sucesso.")
+        else:
+            messagebox.showerror("Erro", "Locker não encontrado ou ID inválido.")
+
     def adicionar_usuario(self):
         usuario_id = self.prompt_input("Digite o ID do Usuário:")
         nome = self.prompt_input("Digite o nome do Usuário:")
@@ -232,6 +283,13 @@ class LockerApp(ctk.CTk):
         else:
             messagebox.showerror("Erro", "ID ou Nome do Usuário inválido.")
 
+    def excluir_usuario(self):
+        usuario_id = self.prompt_input("Digite o ID do Usuário a ser excluído:")
+        if usuario_id and self.sistema_locker.excluir_usuario(usuario_id):
+            messagebox.showinfo("Sucesso", f"Usuário {usuario_id} excluído com sucesso.")
+        else:
+            messagebox.showerror("Erro", "Usuário não encontrado ou ID inválido.")
+
     def associar_locker(self):
         locker_id = self.prompt_input("Digite o ID do Locker:")
         usuario_id = self.prompt_input("Digite o ID do Usuário:")
@@ -243,6 +301,13 @@ class LockerApp(ctk.CTk):
                 messagebox.showerror("Erro", "Falha ao associar Locker ao Usuário.")
         else:
             messagebox.showerror("Erro", "ID do Locker ou Usuário inválido.")
+
+    def liberar_locker(self):
+        locker_id = self.prompt_input("Digite o ID do Locker a ser liberado:")
+        if locker_id and self.sistema_locker.liberar_locker(locker_id):
+            messagebox.showinfo("Sucesso", f"Locker {locker_id} liberado com sucesso.")
+        else:
+            messagebox.showerror("Erro", "Locker não encontrado ou ID inválido.")
 
     def check_status(self):
         locker_id = self.prompt_input("Digite o ID do Locker:")
@@ -292,8 +357,6 @@ class LockerApp(ctk.CTk):
 if __name__ == "__main__":
     sistema_locker = SistemaLocker()
     sistema_locker.carregar_lockers()
-    # sistema_locker.adicionar_locker(100)
-    print(sistema_locker.get_locker_status(100))
     app = LockerApp(sistema_locker)
     app.mainloop()
 
