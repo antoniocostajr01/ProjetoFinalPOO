@@ -42,18 +42,20 @@ class Locker:
      def get_usuario_id(self):
           return self.__usuario_id
 
-
-class Usuario:
-    def __init__(self, nome, id_usuario):
-        self.__usuario_id = id_usuario
-        self.__nome = nome
-
-    def get_usuario_id(self):
-        return self.__usuario_id 
+class pessoa:
+    def __init__(self,nome):
+        self.__nome = nome 
 
     def get_nome(self):
         return self.__nome 
 
+class Usuario(pessoa):
+    def __init__(self, nome, id_usuario):
+        self.__usuario_id = id_usuario
+        super().__init__(nome)
+
+    def get_usuario_id(self):
+        return self.__usuario_id 
 
 class SistemaLocker:
      def __init__(self, locker_arq = 'lockers.txt'):
